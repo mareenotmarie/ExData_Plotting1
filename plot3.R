@@ -1,0 +1,13 @@
+temp <- tempfile()
+download.file("https://d396qusza40orc.cloudfront.net/exdata%2Fdata%2Fhousehold_power_consumption.zip",temp)
+data <- read.csv(unz(temp, "household_power_consumption.txt"), header=FALSE, skip=66637,nrow=2880,col.names=c('Date', 'Time', 'Global_active_power', 'Global_reactive_power','Voltage','Global_intensity','Sub_metering_1','Sub_metering_2','Sub_metering_3'), sep=';',na.strings=c("?"))
+unlink(temp)
+data$Datetime <- strptime(paste(data$Date, data$Time), format="%d/%m/%Y %H:%M:%S")
+
+png('plot3.png', width=480, height=480)
+yrange<-range(c(data$Sub_metering_1,data$Sub_metering_2,data$Sub_metering_3))
+with(data, plot(Datetime, Sub_metering_1, type='l', xlab="", ylab="Energy sub metering",ylim=yrange))
+lines(data$Datetime, data$Sub_metering_2, col="red")
+lines(data$Datetime, data$Sub_metering_3, col="blue")
+legend("topright",col=c("black","red","blue"), legend=c("Sub metering 1", "Sub metering 2", "Sub metering 3"), lty=c(1,1,1))
+dev.off()
